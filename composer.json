@@ -1,0 +1,19 @@
+{
+    "name": "innoractive/huawei-push-service",
+    "description": "Huawei Push Service for PHP",
+    "authors": [
+        {
+            "name": "Tan Wern Jien",
+            "email": "wj@innoractive.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "guzzlehttp/guzzle": "^7.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Innoractive\\HuaweiPushService\\": "src/"
+        }
+    }
+}

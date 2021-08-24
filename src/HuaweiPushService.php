@@ -3,16 +3,85 @@
 namespace Innoractive\HuaweiPushService;
 
 use GuzzleHttp\Client;
+use Innoractive\HuaweiPushService\Support\Singleton;
 
 class HuaweiPushService
 {
+
+    use Singleton;
+
+    /**
+     * client id.
+     *
+     * @var string
+     */
+    protected $client_id;
+
+    /**
+     * client secret.
+     *
+     * @var string
+     */
+    protected $client_secret;
+
+    /**
+     * grant type.
+     *
+     * @var string
+     */
+    protected $grant_type;
+
+
+    public static function __callStatic($method, $args)
+    {
+        return call_user_func_array([static::getInstance(), $method], $args);
+    }
+
+    public function __construct($client_id = '', $client_secret = '', $grant_type = '')
+    {
+        $this->init($client_id, $client_secret, $grant_type);
+    }
+
+     /**
+     * Initialize the config on a HuaweiPushService instance.
+     *
+     * @param  string  $grant_type
+     * @param  string  $client_id
+     * @param  string  $client_secret
+     * @return void
+     */
+    protected function init($grant_type = '', $client_id = '', $client_secret = '')
+    {
+        $this->grant_type = $grant_type ?: static::getConfig('grant_type');
+        $this->client_id = $client_id ?: static::getConfig('client_id');
+        $this->client_secret = $client_secret ?: static::getConfig('client_secret');
+    }
+
+    /**
+     * Get the config for the given key.
+     *
+     * @param  string  $key
+     * @return string
+     */
+    protected function getConfig($key)
+    {
+        if (function_exists('config')) {
+            return config('push-setting.'.$key);
+        }
+
+        if (function_exists('getenv')) {
+            return getenv('HUAWEI_.'.strtoupper($key));
+        }
+
+        return '';
+    }
 
     /**
      * To get access token before sending notification.
      *
      * @return array
      */
-    public static function getAccessToken()
+    protected function getAccessToken($grant_type,$client_id,$client_secret)
     {
         $client = new Client();
         $response = $client->request('POST', "https://oauth-login.cloud.huawei.com/oauth2/v3/token", [
@@ -20,8 +89,7 @@ class HuaweiPushService
             'headers' => [
                 'content-type' => 'application/x-www-form-urlencoded'
             ],
-            'connect_timeout' => 30,
-            'body' => 'grant_type=client_credentials&client_id=102714235&client_secret=0a36c9ab8a72c722dfffcc79c0892a2f3bbcabdb1b4691f01d12aa57ad2be225'
+            'body' => 'grant_type='.$grant_type.'&client_id='.$client_id.'&client_secret='.$client_secret.''
         ]);
 
         $result = $response->getBody()->getContents();
@@ -34,21 +102,19 @@ class HuaweiPushService
      *
      * @return array
      */
-    public static function sendNotification($title,$body,$deviceToken)
+    protected function sendNotification($title,$body,$click_action,$token_device)
     {
-        
-        $generate = self::getAccessToken();
+        $generate = static::getAccessToken($this->grant_type,$this->client_id,$this->client_secret);
 
-        return self::sendMessageNotification($generate['access_token'],$title,$body,$deviceToken);
-
+        return static::sendMessageNotification($generate['access_token'],$title,$body,$click_action,$token_device);
     }
 
     /**
-     * notification paramters and sent to huawei API.
+     * notification parameters and sent to huawei API.
      *
      * @return array
      */
-    public static function sendMessageNotification($token,$title,$body,$deviceToken)
+    protected function sendMessageNotification($token,$title,$body,$click_action,$token_device)
     {
         $param = [
             'validate_only'=>false,
@@ -63,11 +129,11 @@ class HuaweiPushService
                         'body'=>$body,
                         'click_action'=>[
                             'type'=>1,
-                            'intent'=>'intent://com.huawei.codelabpush/deeplink?#Intent;scheme=pushscheme;launchFlags=0x04000000;i.age=180;S.name=abc;end'
+                            'intent'=>$click_action
                         ]
                     ]
                 ],
-                'token'=>[$deviceToken]
+                'token'=>[$token_device]
             ]
         ];
 

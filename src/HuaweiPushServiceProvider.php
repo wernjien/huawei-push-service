@@ -4,7 +4,7 @@ namespace Innoractive\HuaweiPushService;
 
 use Illuminate\Support\ServiceProvider;
 
-class PushSettingServiceProvider extends ServiceProvider
+class HuaweiPushServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -14,7 +14,7 @@ class PushSettingServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/push-setting.php' => config_path('push-setting.php'),
+            __DIR__.'/../config/huawei-push-service.php' => config_path('huawei-push-service.php'),
         ], 'config');
     }
 

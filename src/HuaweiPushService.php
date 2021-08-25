@@ -3,59 +3,9 @@
 namespace Innoractive\HuaweiPushService;
 
 use GuzzleHttp\Client;
-use Innoractive\HuaweiPushService\Support\Singleton;
 
 class HuaweiPushService
 {
-
-    use Singleton;
-
-    /**
-     * client id.
-     *
-     * @var string
-     */
-    protected $client_id;
-
-    /**
-     * client secret.
-     *
-     * @var string
-     */
-    protected $client_secret;
-
-    /**
-     * grant type.
-     *
-     * @var string
-     */
-    protected $grant_type;
-
-
-    public static function __callStatic($method, $args)
-    {
-        return call_user_func_array([static::getInstance(), $method], $args);
-    }
-
-    public function __construct($client_id = '', $client_secret = '', $grant_type = '')
-    {
-        $this->init($client_id, $client_secret, $grant_type);
-    }
-
-     /**
-     * Initialize the config on a HuaweiPushService instance.
-     *
-     * @param  string  $grant_type
-     * @param  string  $client_id
-     * @param  string  $client_secret
-     * @return void
-     */
-    protected function init($grant_type = '', $client_id = '', $client_secret = '')
-    {
-        $this->grant_type = $grant_type ?: static::getConfig('grant_type');
-        $this->client_id = $client_id ?: static::getConfig('client_id');
-        $this->client_secret = $client_secret ?: static::getConfig('client_secret');
-    }
 
     /**
      * Get the config for the given key.
@@ -63,7 +13,7 @@ class HuaweiPushService
      * @param  string  $key
      * @return string
      */
-    protected function getConfig($key)
+    public static function getConfig($key)
     {
         if (function_exists('config')) {
             return config('push-setting.'.$key);
@@ -81,15 +31,20 @@ class HuaweiPushService
      *
      * @return array
      */
-    protected function getAccessToken($grant_type,$client_id,$client_secret)
+    public static function getAccessToken()
     {
+
+        $grantType = self::getConfig('grant_type');
+        $clientId = self::getConfig('client_id');
+        $clientSecret = self::getConfig('client_secret');
+
         $client = new Client();
         $response = $client->request('POST', "https://oauth-login.cloud.huawei.com/oauth2/v3/token", [
             
             'headers' => [
                 'content-type' => 'application/x-www-form-urlencoded'
             ],
-            'body' => 'grant_type='.$grant_type.'&client_id='.$client_id.'&client_secret='.$client_secret.''
+            'body' => 'grant_type='.$grantType.'&client_id='.$clientId.'&client_secret='.$clientSecret.''
         ]);
 
         $result = $response->getBody()->getContents();
@@ -102,11 +57,12 @@ class HuaweiPushService
      *
      * @return array
      */
-    protected function sendNotification($title,$body,$click_action,$token_device)
+    public static function sendNotification($title, $body, $clickAction, $tokenDevice)
     {
-        $generate = static::getAccessToken($this->grant_type,$this->client_id,$this->client_secret);
 
-        return static::sendMessageNotification($generate['access_token'],$title,$body,$click_action,$token_device);
+        $generate = self::getAccessToken();
+
+        return self::sendMessageNotification($generate['access_token'], $title, $body, $clickAction, $tokenDevice);
     }
 
     /**
@@ -114,7 +70,7 @@ class HuaweiPushService
      *
      * @return array
      */
-    protected function sendMessageNotification($token,$title,$body,$click_action,$token_device)
+    public static function sendMessageNotification($token, $title, $body, $clickAction, $tokenDevice)
     {
         $param = [
             'validate_only'=>false,
@@ -129,11 +85,11 @@ class HuaweiPushService
                         'body'=>$body,
                         'click_action'=>[
                             'type'=>1,
-                            'intent'=>$click_action
+                            'intent'=>$clickAction
                         ]
                     ]
                 ],
-                'token'=>[$token_device]
+                'token'=>[$tokenDevice]
             ]
         ];
 

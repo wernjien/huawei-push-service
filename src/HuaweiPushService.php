@@ -16,7 +16,7 @@ class HuaweiPushService
     public static function getConfig($key)
     {
         if (function_exists('config')) {
-            return config('push-setting.'.$key);
+            return config('huawei-push-service.'.$key);
         }
 
         if (function_exists('getenv')) {

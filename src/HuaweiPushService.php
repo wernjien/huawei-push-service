@@ -24,7 +24,7 @@ class HuaweiPushService
 
         $data = json_decode($response->getBody()->getContents());
         $accessToken = isset($data->access_token) ? $data->access_token : '';
-        
+
         return $accessToken;
     }
 

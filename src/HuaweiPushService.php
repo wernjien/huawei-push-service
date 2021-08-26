@@ -54,11 +54,11 @@ class HuaweiPushService
      *
      * @return array
      */
-    public static function sendNotification($title, $body, $clickAction, $tokenDevice)
+    public static function sendNotification($title, $body, $tokenDevice, $clickAction = '')
     {
         $generate = self::getAccessToken();
 
-        return self::sendMessageNotification($generate['access_token'], $title, $body, $clickAction, $tokenDevice);
+        return self::sendMessageNotification($generate['access_token'], $title, $body, $tokenDevice, $clickAction);
     }
 
     /**
@@ -66,7 +66,7 @@ class HuaweiPushService
      *
      * @return array
      */
-    public static function sendMessageNotification($token, $title, $body, $clickAction, $tokenDevice)
+    public static function sendMessageNotification($token, $title, $body, $tokenDevice, $clickAction = '')
     {
         $param = [
             'validate_only' => false,

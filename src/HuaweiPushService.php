@@ -39,7 +39,7 @@ class HuaweiPushService
      * @param  string  $intent
      * @return object
      */
-    public static function sendNotification($clientId, $accessToken, $title, $body, $tokens, $intent = '')
+    public static function sendNotification($clientId, $accessToken, $title, $body, $tokens, $action = ['type' => 3]) // Type 3 = IGNORE
     {
         if (! is_array($tokens)) {
             $tokens = [$tokens];
@@ -56,10 +56,7 @@ class HuaweiPushService
                     'notification' => [
                         'title' => $title,
                         'body' => $body,
-                        'click_action' => [
-                            'type' => 1,
-                            'intent' => $intent,
-                        ],
+                        'click_action' => $action,
                     ],
                 ],
                 'token' => $tokens,

@@ -3,6 +3,10 @@
     "description": "Huawei Push Service for PHP",
     "authors": [
         {
+            "name": "Azrul Jamil",
+            "email": "azrul@innoractive.com"
+        },
+        {
             "name": "Tan Wern Jien",
             "email": "wj@innoractive.com"
         }

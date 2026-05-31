@@ -1,9 +1,9 @@
-# HuaweiPushService SDK
-HuaweiPushService SDK for PHP.
+# HUAWEI Push Service SDK
+PHP SDK for the HUAWEI Push Service.
 
 ## Installation (Laravel)
 Add the following to ```composer.json```:
-```php
+```json
 "repositories": [
     {
         "type": "vcs",
@@ -12,21 +12,11 @@ Add the following to ```composer.json```:
 ]
 ```
 Then, run ```composer require innoractive/huawei-push-service```.
-After the installation completed, add ```Innoractive\HuaweiPushService\HuaweiPushServiceProvider::class``` to the autoloaded service providers array in ```config/app.php```:
-```php
-'providers' => [
-    // ...
-    Innoractive\HuaweiPushService\HuaweiPushServiceProvider::class,
-],
-```
-Publish the config file with the command: ```php artisan vendor:publish --provider="Innoractive\HuaweiPushService\HuaweiPushServiceProvider" --tag="config"```.
-A config file will be created at ```config/huawei-push-services.php```. Update the config and the setup is done!
 
 ## Usage
 ```php
 use Innoractive\HuaweiPushService\HuaweiPushService;
 
-// To sent notification to HUAWEI API.
-HuaweiPushService::sendNotification($title,$body,$click_action,$token_device);
-
+$accessToken = HuaweiPushService::getAccessToken($clientId, $clientSecret);
+$response = HuaweiPushService::sendNotification($clientId, $accessToken, $title, $body, $deviceToken);
 ```

@@ -1,7 +1,7 @@
 # HUAWEI Push Service SDK
 PHP SDK for the HUAWEI Push Service.
 
-## Installation (Laravel)
+## Installation
 Add the following to ```composer.json```:
 ```json
 "repositories": [

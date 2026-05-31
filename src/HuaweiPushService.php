@@ -8,17 +8,14 @@ class HuaweiPushService
 {
     /**
      * Get the access token.
-     *
-     * @param  string  $clientId
-     * @param  string  $clientSecret
-     * @return string
      */
-    public static function getAccessToken($clientId, $clientSecret)
+    public static function getAccessToken(string $clientId, string $clientSecret): string
     {
         $response = (new Client)->request('POST', 'https://oauth-login.cloud.huawei.com/oauth2/v3/token', [
             'headers' => [
                 'content-type' => 'application/x-www-form-urlencoded',
             ],
+
             'body' => "grant_type=client_credentials&client_id={$clientId}&client_secret={$clientSecret}",
         ]);
 
@@ -30,17 +27,15 @@ class HuaweiPushService
 
     /**
      * Send push notification.
-     *
-     * @param  string  $clientId
-     * @param  string  $accessToken
-     * @param  string  $title
-     * @param  string  $body
-     * @param  mixed  $tokens
-     * @param  string  $intent
-     * @return object
      */
-    public static function sendNotification($clientId, $accessToken, $title, $body, $tokens, $action = ['type' => 3]) // Type 3 = IGNORE
-    {
+    public static function sendNotification(
+        string $clientId,
+        string $accessToken,
+        string $title,
+        string $body,
+        mixed $tokens,
+        array $action = ['type' => 3] // Type 3 = IGNORE
+    ): object {
         if (! is_array($tokens)) {
             $tokens = [$tokens];
         }

@@ -1,18 +1,18 @@
 {
     "name": "innoractive/huawei-push-service",
-    "description": "Huawei Push Service for PHP",
+    "description": "PHP SDK for the HUAWEI Push Service.",
     "authors": [
-        {
-            "name": "Azrul Jamil",
-            "email": "azrul@innoractive.com"
-        },
         {
             "name": "Tan Wern Jien",
             "email": "wj@innoractive.com"
+        },
+        {
+            "name": "Azrul Jamil",
+            "email": "azrul@innoractive.com"
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "guzzlehttp/guzzle": "^7.0"
     },
     "autoload": {

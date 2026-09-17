@@ -7,7 +7,7 @@ Add the following to ```composer.json```:
 "repositories": [
     {
         "type": "vcs",
-        "url": "git@bitbucket.org:innoractivehackers/huawei-push-service.git"
+        "url": "git@github.com:wernjien/huawei-push-service.git"
     }
 ]
 ```

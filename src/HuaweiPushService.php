@@ -8,25 +8,30 @@ class HuaweiPushService
 {
     /**
      * Get the access token.
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public static function getAccessToken(string $clientId, string $clientSecret): string
     {
         $response = (new Client)->request('POST', 'https://oauth-login.cloud.huawei.com/oauth2/v3/token', [
-            'headers' => [
-                'content-type' => 'application/x-www-form-urlencoded',
+            'timeout' => 30,
+            'form_params' => [
+                'grant_type' => 'client_credentials',
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
             ],
-
-            'body' => "grant_type=client_credentials&client_id={$clientId}&client_secret={$clientSecret}",
         ]);
 
         $data = json_decode($response->getBody()->getContents());
-        $accessToken = isset($data->access_token) ? $data->access_token : '';
 
-        return $accessToken;
+        return $data->access_token ?? '';
     }
 
     /**
      * Send push notification.
+     *
+     * @throws \InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public static function sendNotification(
         string $clientId,
@@ -40,7 +45,11 @@ class HuaweiPushService
             $tokens = [$tokens];
         }
 
-        $body = json_encode([
+        if (empty($tokens)) {
+            throw new \InvalidArgumentException('At least one device token must be provided.');
+        }
+
+        $payload = json_encode([
             'validate_only' => false,
             'message' => [
                 'notification' => [
@@ -58,16 +67,17 @@ class HuaweiPushService
             ],
         ]);
 
-        $response = (new Client)->request('POST', "https://push-api.cloud.huawei.com/v1/{$clientId}/messages:send", [
+        $response = (new Client)->request('POST', 'https://push-api.cloud.huawei.com/v1/'.rawurlencode($clientId).'/messages:send', [
             'headers' => [
                 'Authorization' => "Bearer {$accessToken}",
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json; charset=utf8',
             ],
             'connect_timeout' => 30,
-            'body' => $body,
+            'timeout' => 30,
+            'body' => $payload,
         ]);
 
-        return json_decode($response->getBody()->getContents());
+        return json_decode($response->getBody()->getContents()) ?? (object) [];
     }
 }

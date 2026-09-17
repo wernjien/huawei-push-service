@@ -41,3 +41,8 @@ try {
 ```
 
 `$response` is the raw decoded JSON object returned by HUAWEI's push API; inspect its `code`/`msg` fields to confirm whether the push actually succeeded.
+
+Both methods also accept an optional trailing `\GuzzleHttp\ClientInterface $client` argument, letting you inject a preconfigured or mocked client (used by the test suite to avoid making real HTTP calls).
+
+## Testing
+Run `composer install` then `composer test` (or `vendor/bin/phpunit`) to execute the test suite.

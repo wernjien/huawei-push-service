@@ -3,6 +3,7 @@
 namespace Innoractive\HuaweiPushService;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 
 class HuaweiPushService
 {
@@ -11,9 +12,9 @@ class HuaweiPushService
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function getAccessToken(string $clientId, string $clientSecret): string
+    public static function getAccessToken(string $clientId, string $clientSecret, ?ClientInterface $client = null): string
     {
-        $response = (new Client)->request('POST', 'https://oauth-login.cloud.huawei.com/oauth2/v3/token', [
+        $response = ($client ?? new Client)->request('POST', 'https://oauth-login.cloud.huawei.com/oauth2/v3/token', [
             'timeout' => 30,
             'form_params' => [
                 'grant_type' => 'client_credentials',
@@ -39,7 +40,8 @@ class HuaweiPushService
         string $title,
         string $body,
         mixed $tokens,
-        array $action = ['type' => 3] // Type 3 = IGNORE
+        array $action = ['type' => 3], // Type 3 = IGNORE
+        ?ClientInterface $client = null
     ): object {
         if (! is_array($tokens)) {
             $tokens = [$tokens];
@@ -67,7 +69,7 @@ class HuaweiPushService
             ],
         ]);
 
-        $response = (new Client)->request('POST', 'https://push-api.cloud.huawei.com/v1/'.rawurlencode($clientId).'/messages:send', [
+        $response = ($client ?? new Client)->request('POST', 'https://push-api.cloud.huawei.com/v1/'.rawurlencode($clientId).'/messages:send', [
             'headers' => [
                 'Authorization' => "Bearer {$accessToken}",
                 'Accept' => 'application/json',
